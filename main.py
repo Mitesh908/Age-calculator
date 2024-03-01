@@ -1,47 +1,46 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-from datetime import datetime
+from tkinter import messagebox
+from datetime import date
 
-class AgeCalculatorApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Age Calculator")
-        self.root.geometry("400x200")
+def get_user_birthday():
+    birth_year = int(entry_year.get())
+    birth_month = int(entry_month.get())
+    birth_day = int(entry_day.get())
 
-        self.date_label = ttk.Label(self.root, text="Enter your date of birth (YYYY-MM-DD):")
-        self.date_label.pack(pady=5)
+    user_birthday = date(birth_year, birth_month, birth_day)
 
-        self.date_entry = ttk.Entry(self.root)
-        self.date_entry.pack(pady=5)
+    return user_birthday
 
-        self.calculate_button = ttk.Button(self.root, text="Calculate Age", command=self.calculate_age)
-        self.calculate_button.pack(pady=5)
+def calculate_age():
+    try:
+        user_birthday = get_user_birthday()
+        today = date.today()
+        year_diff = today.year - user_birthday.year
+        precedes_flag = ((today.month, today.day) < (user_birthday.month, user_birthday.day))
+        age = year_diff - precedes_flag
+        messagebox.showinfo("Age", f"Your age is: {age}")
+    except ValueError:
+        messagebox.showerror("Error", "Please enter valid birth date.")
 
-        self.result_label = ttk.Label(self.root, text="")
-        self.result_label.pack(pady=5)
+root = tk.Tk()
+root.title("Age Calculator")
 
-    def calculate_age(self):
-        dob_str = self.date_entry.get()
-        try:
-            dob = datetime.strptime(dob_str, "%Y-%m-%d")
-            current_date = datetime.now()
-            age = current_date - dob
-            years = age.days // 365
-            remaining_days = age.days % 365
-            months = remaining_days // 30
-            remaining_days = remaining_days % 30
-            days = remaining_days
-            hours = age.seconds // 3600
-            remaining_seconds = age.seconds % 3600
-            minutes = remaining_seconds // 60
-            seconds = remaining_seconds % 60
+label_year = tk.Label(root, text="Enter your birth year:")
+label_year.grid(row=0, column=0, padx=10, pady=5)
+entry_year = tk.Entry(root)
+entry_year.grid(row=0, column=1, padx=10, pady=5)
 
-            age_str = f"Age: {years} years, {months} months, {days} days, {hours} hours, {minutes} minutes, {seconds} seconds."
-            self.result_label.config(text=age_str)
-        except ValueError:
-            messagebox.showerror("Error", "Please enter a valid date in YYYY-MM-DD format.")
+label_month = tk.Label(root, text="Enter your birth month:")
+label_month.grid(row=1, column=0, padx=10, pady=5)
+entry_month = tk.Entry(root)
+entry_month.grid(row=1, column=1, padx=10, pady=5)
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = AgeCalculatorApp(root)
-    root.mainloop()
+label_day = tk.Label(root, text="Enter your birth day:")
+label_day.grid(row=2, column=0, padx=10, pady=5)
+entry_day = tk.Entry(root)
+entry_day.grid(row=2, column=1, padx=10, pady=5)
+
+calculate_button = tk.Button(root, text="Calculate Age", command=calculate_age)
+calculate_button.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
+
+root.mainloop()
